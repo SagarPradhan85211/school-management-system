@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://school-management-system-rwa9.onrender.com",
 });
 
 api.interceptors.request.use((config) => {
