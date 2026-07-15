@@ -1,34 +1,21 @@
-# FROM eclipse-temurin:21-jdk
-
-# WORKDIR /app
-
-# COPY . .
-
-# RUN chmod +x mvnw
-# RUN ./mvnw clean package -DskipTests
-
-# EXPOSE 8080
-
-# CMD ["sh","-c","java -jar target/*.jar"]
-
-
-# Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-17 AS build
-
+FROM openjdk:19-jdk AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src src
 
-COPY . .
+# Copy Maven wrapper
+COPY mvnw .
+COPY .mvn .mvn
 
-RUN mvn clean package -DskipTests
+# Set execution permission for the Maven wrapper
+RUN chmod +x ./mvnw
+RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Run
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: Create the final Docker image using OpenJDK 19
+FROM openjdk:19-jdk
+VOLUME /tmp
 
-WORKDIR /app
-
+# Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
-
+ENTRYPOINT ["java","-jar","/app.jar"]
 EXPOSE 8080
-
-# ENTRYPOINT ["java","-jar","app.jar"]
-CMD ["sh","-c","java -jar target/*.jar"]
