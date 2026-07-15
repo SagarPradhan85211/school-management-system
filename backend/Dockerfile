@@ -1,12 +1,5 @@
-FROM eclipse-temurin:21-jdk
+FROM openjdk:17
 
-WORKDIR /app
+ADD target/sms-0.0.1-SNAPSHOT.war app.war
 
-COPY . .
-
-RUN chmod +x mvnw
-RUN ./mvnw clean package -DskipTests
-
-EXPOSE 8080
-
-CMD ["sh","-c","java -jar target/*.jar"]
+ENTRYPOINT [ "java" ,"-jar" , "/app.war" ]
